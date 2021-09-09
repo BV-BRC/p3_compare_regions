@@ -6,6 +6,14 @@ TARGET ?= /kb/deployment
 
 APP_SERVICE = app_service
 
+SERVER_SPEC = SEED.spec
+SERVICE_MODULE = lib/P3Service.pm
+
+SERVICE = compare_regions
+SERVICE_PORT = 6014
+
+SERVICE_URL = https://p3.theseed.org/services/$(SERVICE)
+
 SRC_PERL = $(wildcard scripts/*.pl)
 BIN_PERL = $(addprefix $(BIN_DIR)/,$(basename $(notdir $(SRC_PERL))))
 DEPLOY_PERL = $(addprefix $(TARGET)/bin/,$(basename $(notdir $(SRC_PERL))))
@@ -30,6 +38,21 @@ TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --d
 all: bin 
 
 bin: $(BIN_PERL) $(BIN_SERVICE_PERL)
+
+compile-typespec: Makefile
+	compile_typespec \
+		--no-typedocs \
+		--patric \
+		--psgi p3seed.psgi \
+		--impl P3SEEDImpl \
+		--service P3SEEDService \
+		--client P3SEEDClient \
+		--url $(SERVICE_URL) \
+		--enable-retries \
+		$(SERVER_SPEC) lib
+	-rm -f lib/SEED{Server,Impl,Client}.{js,py}*
+	-rm -f lib/$(SERVER_MODULE)Impl.py
+
 
 deploy: deploy-all
 deploy-all: deploy-client 
