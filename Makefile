@@ -62,7 +62,7 @@ deploy-service: deploy-libs deploy-scripts deploy-service-scripts deploy-specs
 
 deploy-specs:
 	mkdir -p $(TARGET)/services/$(APP_SERVICE)
-	rsync -arv app_specs $(TARGET)/services/$(APP_SERVICE)/.
+	-d app_specs && rsync -arv app_specs $(TARGET)/services/$(APP_SERVICE)/.
 
 deploy-service-scripts:
 	export KB_TOP=$(TARGET); \
