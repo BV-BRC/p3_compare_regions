@@ -37,7 +37,7 @@ TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --d
 	--define kb_starman_workers=$(STARMAN_WORKERS) \
 	--define kb_starman_max_requests=$(STARMAN_MAX_REQUESTS)
 
-all: bin 
+all: bin compile-typespec
 
 bin: $(BIN_PERL) $(BIN_SERVICE_PERL)
 
@@ -58,7 +58,7 @@ compile-typespec: Makefile
 
 deploy: deploy-all
 deploy-all: deploy-client 
-deploy-client: deploy-libs deploy-scripts deploy-docs
+deploy-client: compile-typespec deploy-libs deploy-scripts deploy-docs
 
 deploy-service: deploy-dir deploy-libs deploy-scripts deploy-service-scripts deploy-specs
 	for templ in service/*.tt ; do \
