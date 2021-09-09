@@ -11,6 +11,7 @@ SERVICE_MODULE = lib/P3Service.pm
 
 SERVICE = compare_regions
 SERVICE_PORT = 6014
+SERVICE_PSGI = p3seed.psgi
 
 SERVICE_URL = https://p3.theseed.org/services/$(SERVICE)
 
@@ -31,6 +32,7 @@ STARMAN_MAX_REQUESTS = 100
 
 TPAGE_ARGS = --define kb_top=$(TARGET) --define kb_runtime=$(DEPLOY_RUNTIME) --define kb_service_name=$(SERVICE) \
 	--define kb_service_port=$(SERVICE_PORT) --define kb_service_dir=$(SERVICE_DIR) \
+	--define kb_service_psgi=$(SERVICE_PSGI) \
 	--define kb_sphinx_port=$(SPHINX_PORT) --define kb_sphinx_host=$(SPHINX_HOST) \
 	--define kb_starman_workers=$(STARMAN_WORKERS) \
 	--define kb_starman_max_requests=$(STARMAN_MAX_REQUESTS)
@@ -43,7 +45,7 @@ compile-typespec: Makefile
 	compile_typespec \
 		--no-typedocs \
 		--patric \
-		--psgi p3seed.psgi \
+		--psgi $(SERVICE_PSGI) \
 		--impl P3SEEDImpl \
 		--service P3SEEDService \
 		--client P3SEEDClient \
@@ -58,11 +60,18 @@ deploy: deploy-all
 deploy-all: deploy-client 
 deploy-client: deploy-libs deploy-scripts deploy-docs
 
-deploy-service: deploy-libs deploy-scripts deploy-service-scripts deploy-specs
+deploy-service: deploy-dir deploy-libs deploy-scripts deploy-service-scripts deploy-specs
+	for templ in service/*.tt ; do \
+		base=`basename $$templ .tt` ; \
+		$(TPAGE) $(TPAGE_ARGS) $$templ > $(TARGET)/services/$(SERVICE)/$$base ; \
+		chmod +x $(TARGET)/services/$(SERVICE)/$$base ; \
+	done
 
 deploy-specs:
-	mkdir -p $(TARGET)/services/$(APP_SERVICE)
-	-d app_specs && rsync -arv app_specs $(TARGET)/services/$(APP_SERVICE)/.
+	if [[ -d app_specs ]] ; then \
+		mkdir -p $(TARGET)/services/$(APP_SERVICE);  \
+		rsync -arv app_specs $(TARGET)/services/$(APP_SERVICE)/. ; \
+	fi
 
 deploy-service-scripts:
 	export KB_TOP=$(TARGET); \
