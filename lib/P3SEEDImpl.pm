@@ -129,13 +129,86 @@ sub compare_regions_for_peg
     }
     else
     {
-	$return = $api->compare_regions_for_peg($peg, $width, $n_genomes, $coloring_method, $genome_filter);
+	$return = eval { $api->compare_regions_for_peg($peg, $width, $n_genomes, $coloring_method, $genome_filter); } ;
+	
+	if ($@)
+	{
+	    warn "Failed: $@\n";
+	    die $@;
+	}
     }
     #END compare_regions_for_peg
     my @_bad_returns;
     (ref($return) eq 'ARRAY') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
     if (@_bad_returns) {
 	my $msg = "Invalid returns passed to compare_regions_for_peg:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	die $msg;
+    }
+    return($return);
+}
+
+
+=head2 compare_regions_for_peg2
+
+  $return = $obj->compare_regions_for_peg2($peg, $width, $n_genomes, $coloring_method, $genome_filter, $options)
+
+=over 4
+
+
+
+
+=item Description
+
+
+=back
+
+=cut
+
+sub compare_regions_for_peg2
+{
+    my $self = shift;
+    my($peg, $width, $n_genomes, $coloring_method, $genome_filter, $options) = @_;
+
+    my @_bad_arguments;
+    (!ref($peg)) or push(@_bad_arguments, "Invalid type for argument \"peg\" (value was \"$peg\")");
+    (!ref($width)) or push(@_bad_arguments, "Invalid type for argument \"width\" (value was \"$width\")");
+    (!ref($n_genomes)) or push(@_bad_arguments, "Invalid type for argument \"n_genomes\" (value was \"$n_genomes\")");
+    (!ref($coloring_method)) or push(@_bad_arguments, "Invalid type for argument \"coloring_method\" (value was \"$coloring_method\")");
+    (!ref($genome_filter)) or push(@_bad_arguments, "Invalid type for argument \"genome_filter\" (value was \"$genome_filter\")");
+    (ref($options) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"options\" (value was \"$options\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to compare_regions_for_peg2:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	die $msg;
+    }
+
+    my $ctx = $P3SEEDService::CallContext;
+    my($return);
+    #BEGIN compare_regions_for_peg2
+
+    my $api = $self->{api};
+
+    local $api->{token} = $ctx->token;
+    print STDERR "Compare region using token $api->{token}\n";
+
+    if ($self->{_new_service})
+    {
+	$return = $api->compare_regions_for_peg_new($peg, $width, $n_genomes, $coloring_method, $genome_filter);
+    }
+    else
+    {
+	$return = eval { $api->compare_regions_for_peg($peg, $width, $n_genomes, $coloring_method, $genome_filter, $options);};
+	if ($@)
+	{
+	    warn "Failed: $@\n";
+	    die $@;
+	}
+    }
+
+    #END compare_regions_for_peg2
+    my @_bad_returns;
+    (ref($return) eq 'ARRAY') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to compare_regions_for_peg2:\n" . join("", map { "\t$_\n" } @_bad_returns);
 	die $msg;
     }
     return($return);

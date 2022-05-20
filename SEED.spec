@@ -85,6 +85,14 @@ module SEED
 
     funcdef compare_regions_for_peg(string peg, int width, int n_genomes, string coloring_method, string genome_filter) returns (compared_regions);
 
+    typedef structure {
+        list<string> genome_list;
+	string genome_group;
+	string feature_group;
+    } compare_regions_for_peg2_options;
+
+    funcdef compare_regions_for_peg2(string peg, int width, int n_genomes, string coloring_method, string genome_filter, compare_regions_for_peg2_options options) returns (compared_regions);
+
     funcdef get_ncbi_cdd_url(string feature) returns (string url);
     funcdef compute_cdd_for_row(genome_compare_info pegs) returns (list<feature_compare_info> cdds);
     funcdef compute_cdd_for_feature(feature_compare_info feature) returns (list<feature_compare_info> cdds);
