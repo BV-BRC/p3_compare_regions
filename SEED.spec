@@ -89,6 +89,7 @@ module SEED
         list<string> genome_list;
 	string genome_group;
 	string feature_group;
+	string feature_query;
     } compare_regions_for_peg2_options;
 
     funcdef compare_regions_for_peg2(string peg, int width, int n_genomes, string coloring_method, string genome_filter, compare_regions_for_peg2_options options) returns (compared_regions);

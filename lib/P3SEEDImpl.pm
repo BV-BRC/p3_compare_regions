@@ -386,8 +386,8 @@ sub get_palette
 	    my $c = $colors->[$i];
 	    if ($c->[0] == 255 && $c->[1] == 0 && $c->[2] == 0)
 	    {
-		$colors->[$i] = $colors->[1];
-		$colors->[1] = $c;
+		$colors->[$i] = $colors->[0];
+		$colors->[0] = $c;
 		last;
 	    }
 	}
